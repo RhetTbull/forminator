@@ -188,7 +188,6 @@ class MainWindow(ui.Window):
         self.title = "Forminator"
         self.geometry = "800x600"
 
-        self.api_key = os.getenv("OPENAI_API_KEY", "Please enter OpenAI API Key")
         self.load_settings()
 
         with ui.VLayout():
@@ -233,6 +232,10 @@ class MainWindow(ui.Window):
         )
         if self.directory:
             self.scan_files()
+
+    @ui.on(key="api_key")
+    def on_api_key(self):
+        self.api_key = self.get("api_key").value
 
     @ui.on(key="output_dir")
     def on_output_dir(self):
@@ -308,6 +311,9 @@ class MainWindow(ui.Window):
 
     def validate(self):
         """Validate the input fields"""
+        if not self.api_key:
+            tk.messagebox.showinfo("Error", "Please enter an OpenAI API key")
+            return False
         if not self.directory:
             tk.messagebox.showinfo(
                 "Error", "Please select a forms directory to process"
@@ -335,6 +341,7 @@ class MainWindow(ui.Window):
         config_path = os.path.join(xdg_config_home(), CONFIG_FILE)
 
         # Set default values
+        self.api_key = os.getenv("OPENAI_API_KEY", "Please enter OpenAI API Key")
         self.directory = os.path.expanduser("~/")
         self.output_dir = os.path.expanduser("~/Desktop")
         self.output_file = OUTPUT_FILE
@@ -342,6 +349,7 @@ class MainWindow(ui.Window):
         if os.path.exists(config_path):
             config.read(config_path)
             if "Settings" in config:
+                self.api_key = config["Settings"].get("api_key", self.api_key)
                 self.directory = config["Settings"].get("directory", self.directory)
                 self.output_dir = config["Settings"].get("output_dir", self.output_dir)
                 self.output_file = config["Settings"].get(
@@ -352,6 +360,7 @@ class MainWindow(ui.Window):
         """Save the configuration to the config file"""
         config = configparser.ConfigParser()
         config["Settings"] = {
+            "api_key": self.api_key,
             "directory": self.directory,
             "output_dir": self.output_dir,
             "output_file": self.output_file,
