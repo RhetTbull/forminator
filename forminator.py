@@ -365,6 +365,8 @@ class MainWindow(ui.Window):
             "output_dir": self.output_dir,
             "output_file": self.output_file,
         }
+        if not os.path.exists(xdg_config_home()):
+            os.makedirs(xdg_config_home())
         config_path = os.path.join(xdg_config_home(), CONFIG_FILE)
         print(f"Saving settings to {config_path}")
         with open(config_path, "w") as configfile:
