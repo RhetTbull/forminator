@@ -216,7 +216,7 @@ class MainWindow(ui.Window):
             ui.Output(key="output", height=20, width=100)
 
     def setup(self):
-        """"Perform setup before showing window"""
+        """ "Perform setup before showing window"""
         # If self.directory exists, scan the files
         self.files = []
         if self.directory:
@@ -302,6 +302,8 @@ class MainWindow(ui.Window):
         self.files = []
         if not self.directory:
             return
+        if not os.path.exists(self.directory):
+            print(f"Directory {self.directory} does not exist")
         for file in os.listdir(self.directory):
             suffix = pathlib.Path(file).suffix.lower()
             if suffix in (".jpg", ".jpeg", ".png"):
@@ -333,7 +335,6 @@ class MainWindow(ui.Window):
             )
             return False
         return True
-
 
     def load_settings(self):
         """Load the configuration from the config file"""
